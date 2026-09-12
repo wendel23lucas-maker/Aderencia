@@ -53,18 +53,6 @@
   header .sub{color:var(--ink-soft);font-size:14.5px;margin:0;}
   header .sub b{color:var(--ink);font-weight:600;}
 
-  .header-actions{display:flex;align-items:center;gap:10px;}
-  .install-btn{
-    display:flex;align-items:center;gap:7px;
-    background:var(--surface);color:var(--steel);border:1px solid var(--border);
-    padding:9px 14px;border-radius:9px;font-size:13px;font-weight:600;
-    cursor:pointer;font-family:inherit;transition:all .15s ease;
-    white-space:nowrap;
-  }
-  .install-btn:hover{background:#EEF3F5;border-color:var(--steel-soft);}
-  .install-btn svg{width:15px;height:15px;flex:none;}
-  .install-btn.hidden{display:none;}
-
   .upload-zone{position:relative;display:inline-flex;}
   .upload-btn{
     width:40px;height:40px;flex:none;
@@ -133,7 +121,17 @@
   .tab-panel.active{display:block;}
 
   /* ---------- KPI row ---------- */
-  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px;}
+  .kpi-sticky{
+    position:sticky;top:0;z-index:40;
+    background:var(--bg);
+    padding:14px 0 16px;
+    margin:-14px 0 6px;
+  }
+  .kpi-sticky::after{
+    content:'';position:absolute;left:-24px;right:-24px;bottom:0;height:1px;
+    background:var(--line);
+  }
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
   .kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 16px 14px;position:relative;overflow:hidden;}
   .kpi .label{font-size:12.5px;color:var(--ink-soft);margin:0 0 8px;font-weight:600;}
   .kpi .value{font-size:26px;font-weight:700;letter-spacing:-0.02em;line-height:1;color:var(--ink);}
@@ -285,39 +283,23 @@
       <h1>Painel de Aderência — Montagem</h1>
       <p class="sub">Período de referência: <b id="periodoLabel">—</b> · dados por célula e por item</p>
     </div>
-    <div class="header-actions">
-      <button class="install-btn" id="installBtn" type="button" title="Instalar como aplicativo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="7 10 12 15 17 10"/><path d="M5 19h14"/></svg>
-        <span>Instalar app</span>
-      </button>
-      <div class="upload-zone" tabindex="0">
-        <label class="upload-btn" for="fileInput" title="Carregar nova planilha">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <span class="sync-dot" id="syncDot"></span>
-        </label>
-        <input type="file" id="fileInput" accept=".xlsx,.xlsm">
-        <div class="upload-panel">
-          <p class="panel-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Carregar nova planilha
-          </p>
-          <span class="upload-status" id="uploadStatus">Exibindo dados de Agosto/2026</span>
-          <span class="upload-status" id="syncBadge" style="color:var(--ink-faint);"></span>
-        </div>
+    <div class="upload-zone" tabindex="0">
+      <label class="upload-btn" for="fileInput" title="Carregar nova planilha">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span class="sync-dot" id="syncDot"></span>
+      </label>
+      <input type="file" id="fileInput" accept=".xlsx,.xlsm">
+      <div class="upload-panel">
+        <p class="panel-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Carregar nova planilha
+        </p>
+        <span class="upload-status" id="uploadStatus">Exibindo dados de Agosto/2026</span>
+        <span class="upload-status" id="syncBadge" style="color:var(--ink-faint);"></span>
       </div>
     </div>
   </header>
 
-  <!-- ===================== MODAL: instruções de instalação (iOS / manual) ===================== -->
-  <div class="chart-modal" id="installModal">
-    <div class="chart-modal-inner" style="max-width:420px;">
-      <div class="chart-modal-head">
-        <h3 id="installModalTitle">Instalar o app</h3>
-        <button class="chart-modal-close" id="installModalClose">✕</button>
-      </div>
-      <div class="chart-modal-body" id="installModalBody"></div>
-    </div>
-  </div>
 
   <div class="toolbar">
     <div class="tabs">
@@ -337,7 +319,9 @@
   <!-- ===================== TAB: VISÃO GERAL ===================== -->
   <div class="tab-panel active" id="tab-geral">
 
-    <div class="kpis" id="kpiRow"></div>
+    <div class="kpi-sticky">
+      <div class="kpis" id="kpiRow"></div>
+    </div>
 
     <div class="insight" id="insightBanner">
       <div class="dot"></div>
@@ -1901,74 +1885,9 @@ document.getElementById('fileInput').addEventListener('change', function(e){
 });
 
 /* ============================================================
-   Instalação como app (PWA) — PC e celular
+   PWA — mantém o app instalável (ícone/menu nativo do navegador)
+   e disponível offline via service worker
    ============================================================ */
-const installBtn = document.getElementById('installBtn');
-const installModal = document.getElementById('installModal');
-const installModalBody = document.getElementById('installModalBody');
-let deferredInstallPrompt = null;
-
-const isStandalone = () =>
-  window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-function closeInstallModal(){ installModal.classList.remove('open'); }
-document.getElementById('installModalClose').addEventListener('click', closeInstallModal);
-installModal.addEventListener('click', (e)=>{ if(e.target === installModal) closeInstallModal(); });
-
-function showInstallInstructions(){
-  if(isIOS()){
-    installModalBody.innerHTML = `
-      <p style="margin:0 0 12px;font-size:13.5px;line-height:1.6;color:var(--ink-soft);">Para instalar no iPhone/iPad, use o Safari:</p>
-      <ol style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.9;color:var(--ink);">
-        <li>Toque no ícone <b>Compartilhar</b> (o quadrado com a seta para cima) na barra do Safari.</li>
-        <li>Role e toque em <b>"Adicionar à Tela de Início"</b>.</li>
-        <li>Toque em <b>"Adicionar"</b> no canto superior direito.</li>
-      </ol>`;
-  } else {
-    installModalBody.innerHTML = `
-      <p style="margin:0 0 12px;font-size:13.5px;line-height:1.6;color:var(--ink-soft);">Para instalar no computador ou Android pelo Chrome/Edge:</p>
-      <ol style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.9;color:var(--ink);">
-        <li>Clique no ícone de instalação <b>⊕</b> na barra de endereço (ou no menu <b>⋮</b>).</li>
-        <li>Selecione <b>"Instalar app"</b> ou <b>"Instalar Painel de Aderência"</b>.</li>
-        <li>O painel abrirá como um aplicativo próprio, com ícone na área de trabalho / menu iniciar.</li>
-      </ol>`;
-  }
-  installModal.classList.add('open');
-}
-
-window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault();
-  deferredInstallPrompt = e;
-  installBtn.classList.remove('hidden');
-});
-
-installBtn.addEventListener('click', async ()=>{
-  if(deferredInstallPrompt){
-    deferredInstallPrompt.prompt();
-    try{ await deferredInstallPrompt.userChoice; }catch(err){}
-    deferredInstallPrompt = null;
-  } else {
-    showInstallInstructions();
-  }
-});
-
-window.addEventListener('appinstalled', ()=>{
-  deferredInstallPrompt = null;
-  installBtn.classList.add('hidden');
-});
-
-if(isStandalone()){
-  installBtn.classList.add('hidden');
-} else if(isIOS()){
-  // iOS nunca dispara beforeinstallprompt — mostra o botão direto com instruções manuais
-  installBtn.classList.remove('hidden');
-} else {
-  // outros navegadores: mostra o botão; se não houver prompt automático, cai nas instruções manuais
-  installBtn.classList.remove('hidden');
-}
-
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
     navigator.serviceWorker.register('service-worker.js').catch(()=>{});
